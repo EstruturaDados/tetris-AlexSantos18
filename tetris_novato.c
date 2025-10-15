@@ -5,6 +5,33 @@
 // Este código inicial serve como base para o desenvolvimento do sistema de controle de peças.
 // Use as instruções de cada nível para desenvolver o desafio.
 
+
+#define MAX_TAMANHO 5
+
+
+typedef struct 
+{
+    char tipo[20];
+    int id;
+}tetris;
+
+
+typedef struct 
+{
+    tetris itens[MAX_TAMANHO];
+    int inicio;
+    int fim;
+    int total;
+}Fila;
+
+void InicializaFila(Fila *f);
+void FilaCheia(Fila *f);
+void FilaVazia(Fila *f);
+void InserirFila(Fila *f, Peca p);
+void RemoverFila(Fila *f, Peca p);
+
+
+
 int main() {
 
     // 🧩 Nível Novato: Fila de Peças Futuras
@@ -54,3 +81,38 @@ int main() {
     return 0;
 }
 
+
+void InicializaFila(Fila *f){
+    f->inicio = 0;
+    f->fim = 0;
+    f->total = 0;
+}
+
+void FilaCheia(Fila *f){
+    return f->total == MAX_TAMANHO;
+}
+
+void FilaVazia(Fila *f){
+    return f->total == 0;
+}
+
+void InserirFila(Fila *f, Peca p){
+    if (f->total == MAX_TAMANHO){
+        printf("[AVISO] Fila Cheia.");
+        return;
+    }
+    f->itens[f->fim] = p;
+    f->fim = (f->fim + 1) % MAX_TAMANHO;
+    f->total++;
+}
+
+void RemoverFila(Fila *f, Peca *p){
+    if (FilaVazia(f)){
+        printf("[AVISO] Fila Vazia.");
+        return;
+    }
+    *p = f->itens[f->inicio];
+    f->inicio = (f->inicio +1) % MAX_TAMANHO;
+    f->total--;
+
+}
