@@ -8,14 +8,14 @@
 
 #define MAX_TAMANHO 5
 
-
+// Estrutura das peças 
 typedef struct 
 {
     char tipo[20];
     int id;
 }tetris;
 
-
+// Estrutura da Fila
 typedef struct 
 {
     tetris itens[MAX_TAMANHO];
@@ -23,6 +23,8 @@ typedef struct
     int fim;
     int total;
 }Fila;
+
+
 
 void InicializaFila(Fila *f);
 void FilaCheia(Fila *f);
@@ -81,21 +83,29 @@ int main() {
     return 0;
 }
 
-
+/// @brief Inicializa a fila vazia
+/// @param f passa o ponteiro dos itens
 void InicializaFila(Fila *f){
     f->inicio = 0;
     f->fim = 0;
     f->total = 0;
 }
 
+/// @brief Verifica se a fila esta cheira 
+/// @param f 
 void FilaCheia(Fila *f){
     return f->total == MAX_TAMANHO;
 }
 
+/// @brief Vefifica se a fila esta vazia
+/// @param f 
 void FilaVazia(Fila *f){
     return f->total == 0;
 }
 
+/// @brief Inseri as peças da Fila
+/// @param f ponteiro dos itens 
+/// @param p parametro aonde recebe as informaçoes
 void InserirFila(Fila *f, Peca p){
     if (f->total == MAX_TAMANHO){
         printf("[AVISO] Fila Cheia.");
@@ -106,6 +116,9 @@ void InserirFila(Fila *f, Peca p){
     f->total++;
 }
 
+/// @brief Remove as peças da Fila
+/// @param f ponteiro dos itens
+/// @param p paramentro aonde recebe as informaçoes pelo ponteiro
 void RemoverFila(Fila *f, Peca *p){
     if (FilaVazia(f)){
         printf("[AVISO] Fila Vazia.");
