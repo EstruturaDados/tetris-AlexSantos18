@@ -107,8 +107,8 @@ int main() {
             break;
         }
 
-        case 2:
-        {
+        case 2: // 2 -  move a peca da frete da fila para o topo da pilha, se houver espaco
+        { 
              if (FilaVazia(&f)){
                 printf("[AVISO] Fila Vazia! Nenhuma peca para jogar.\n");
              } else if (PilhaCheia(&p)){
@@ -125,7 +125,7 @@ int main() {
 
         }
 
-        case 3:
+        case 3: // usa a peca da pilha porem so joga fora
         {
             if (PilhaVazia(&p)){
                 printf("[AVISO] Nenhuma peça reservada.\n");
@@ -301,6 +301,9 @@ int PilhaCheia(Pilha *p){
     return p->topo == MAX_PILHA -1;
 }
 
+/// @brief  inseri na pilha uma peca no final
+/// @param p  passa o ponteiro da pilha
+/// @param t  passa o ponteiro t
 void InserirPilha(Pilha *p, tetris t) {
     if (PilhaCheia(p)) {
         printf("[AVISO] Pilha Cheia! Impossível inserir.\n");
