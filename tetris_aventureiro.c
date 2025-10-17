@@ -7,10 +7,11 @@
 
 
 #define MAX_TAMANHO 5
-// Tipos de peças disponíveis
+#define MAX_PILHA 3
+
 const char *TIPOS_PECA[] = {"I", "O", "T", "L", "I"};
 #define NUM_TIPOS 5
-#define MAX_PILHA 3
+
 
 // Variável global para gerar IDs sequenciais   
 int proximo_id = 0;
@@ -46,11 +47,15 @@ int FilaVazia(Fila *f);
 void InserirFila(Fila *f, tetris p);
 void RemoverFila(Fila *f, tetris *p);
 void MostrarFila(Fila *f);
+
 void InicializarPilha(Pilha *p);
 void MostrarPilha(Pilha *p);
 void RemoverPilha(Pilha *p, tetris *t);
 int PilhaVazia(Pilha *p);
 int PilhaCheia(Pilha *p);
+void InserirPilha(Pilha *p, tetris t);
+
+
 void Menu();
 tetris GerarPeca(); //  função para gerar uma nova peça
 
@@ -58,8 +63,12 @@ tetris GerarPeca(); //  função para gerar uma nova peça
 int main() {
     
     Fila f;
+    Pilha p;
     InicializaFila(&f);
+    InicializarPilha(&p);
+
     int resp;
+    tetris removida;
 
     // Inicializa a fila com 5 peças geradas automaticamente
     printf("Inicializando Fila...\n");
@@ -67,10 +76,9 @@ int main() {
         InserirFila(&f, GerarPeca());
     }
     MostrarFila(&f);
+    MostrarPilha(&p);
 
-
-    tetris removida;
-    tetris remove;
+    
     
     do
     {
@@ -90,21 +98,45 @@ int main() {
             } else {
                 RemoverFila(&f, &removida);
                 printf("[JOGAR] Peca jogada: [%s, %d]\n", removida.tipo, removida.id);
+                InserirFila(&f, GerarPeca());
                 
  
             }
             MostrarFila(&f);
+            MostrarPilha(&p);
             break;
         }
 
         case 2:
         {
-             // Repõe uma nova peça ao final, mantendo o tamanho
-            tetris novaPeca = GerarPeca();
-            InserirFila(&f, novaPeca);
-            printf("[REPOSICAO] Inserida nova peca: [%s, %d]\n", novaPeca.tipo, novaPeca.id);
-            printf("\n");
+             if (FilaVazia(&f)){
+                printf("[AVISO] Fila Vazia! Nenhuma peca para jogar.\n");
+             } else if (PilhaCheia(&p)){
+                 printf("[AVISO] Pilha Cheia! Não é possível reservar mais peças.\n");
+             } else {
+                RemoverFila(&f, &removida);
+                InserirPilha(&p, removida);
+                printf("[RESERVA] Peça movida para reserva: [%s, %d]\n", removida.tipo, removida.id);
+                InserirFila(&f, GerarPeca());
+             }
+             MostrarFila(&f);
+             MostrarPilha(&p);  
+            break;
+
+        }
+
+        case 3:
+        {
+            if (PilhaVazia(&p)){
+                printf("[AVISO] Nenhuma peça reservada.\n");
+
+            } else {
+                RemoverPilha(&p, &removida);
+                 printf("[USO] Peça usada da reserva: [%s, %d]\n", removida.tipo, removida.id);
+
+            }
             MostrarFila(&f);
+            MostrarPilha(&p);
             break;
 
         }
@@ -190,6 +222,7 @@ void RemoverFila(Fila *f, tetris *p){
     f->inicio = (f->inicio + 1) % MAX_TAMANHO;
     f->total--;
 }
+
 /// @brief Mostra a fila na ordem de retirada
 /// @param f ponteiro para a struct 
 void MostrarFila(Fila *f){
@@ -265,5 +298,13 @@ int PilhaVazia(Pilha *p){
 /// @param p ponteiro da pilha
 /// @return retorna 0 se a pilha estiver cheia
 int PilhaCheia(Pilha *p){
-    return p->topo == MAX_PILHA;
+    return p->topo == MAX_PILHA -1;
+}
+
+void InserirPilha(Pilha *p, tetris t) {
+    if (PilhaCheia(p)) {
+        printf("[AVISO] Pilha Cheia! Impossível inserir.\n");
+        return;
+    }
+    p->reserva[++p->topo] = t;
 }
