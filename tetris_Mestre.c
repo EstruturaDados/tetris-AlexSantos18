@@ -47,6 +47,7 @@ int FilaVazia(Fila *f);
 void InserirFila(Fila *f, tetris p);
 void RemoverFila(Fila *f, tetris *p);
 void MostrarFila(Fila *f);
+void InserirFilaFrente(Fila *f, tetris p);
 
 void InicializarPilha(Pilha *p);
 void MostrarPilha(Pilha *p);
@@ -69,7 +70,7 @@ int main() {
 
     int resp;
     tetris removida;
-
+  
     // Inicializa a fila com 5 peças geradas automaticamente
     printf("Inicializando Fila...\n");
     for (int i = 0; i < MAX_TAMANHO; i++) {
@@ -141,6 +142,71 @@ int main() {
 
         }
 
+        case 4: // Trocar a peça da frente da FILA com o topo da PILHA
+        {
+            if (FilaVazia(&f)) {
+                printf("[AVISO] Fila vazia! Nenhuma peça para trocar.\n");
+            } else if (PilhaVazia(&p)) {
+                printf("[AVISO] Pilha vazia! Nenhuma peça para trocar.\n");
+            } else {
+                tetris peca_fila, peca_pilha;
+
+                // Remove da fila e da pilha
+                RemoverFila(&f, &peca_fila);
+                RemoverPilha(&p, &peca_pilha);
+
+                // Troca: insere a peça da pilha na frente da fila
+                InserirFilaFrente(&f, peca_pilha);
+
+                // Insere a peça da fila no topo da pilha
+                InserirPilha(&p, peca_fila);
+
+                printf("[TROCA] Peça da FILA [%s, %d] trocada com PILHA [%s, %d]\n",
+                    peca_fila.tipo, peca_fila.id,
+                    peca_pilha.tipo, peca_pilha.id);
+            }
+            MostrarFila(&f);
+            MostrarPilha(&p);
+            break;
+        }
+
+case 5: // Trocar três peças da FILA com três da PILHA
+{
+    if (f.total < 3) {
+        printf("[AVISO] Fila tem menos de 3 peças.\n");
+    } else if (p.topo < 2) { // topo = 2 → 3 elementos (0,1,2)
+        printf("[AVISO] Pilha tem menos de 3 peças.\n");
+    } else {
+        tetris fila3[3];
+        tetris pilha3[3];
+
+        // Remove as 3 primeiras da fila
+        for (int i = 0; i < 3; i++) {
+            RemoverFila(&f, &fila3[i]);
+        }
+
+        // Remove as 3 da pilha (topo primeiro)
+        for (int i = 0; i < 3; i++) {
+            RemoverPilha(&p, &pilha3[i]);
+        }
+
+        // Insere as 3 da pilha na FRENTE da fila (topo da pilha vira primeira)
+        for (int i = 2; i >= 0; i--) {
+            InserirFilaFrente(&f, pilha3[i]);
+        }
+
+        // Insere as 3 da fila na PILHA (primeira da fila vira topo)
+        for (int i = 2; i >= 0; i--) {
+            InserirPilha(&p, fila3[i]);
+        }
+
+        printf("[TROCA] 3 peças trocadas entre FILA e PILHA.\n");
+    }
+    MostrarFila(&f);
+    MostrarPilha(&p);
+    break;
+}
+
         case 0: // 0 - Sair
         {
             printf("Saindo do sistema.\n");
@@ -210,6 +276,16 @@ void InserirFila(Fila *f, tetris p){
     f->total++;
 }
 
+void InserirFilaFrente(Fila *f, tetris p) {
+    if (FilaCheia(f)) {
+        printf("[AVISO] Fila Cheia. Impossivel inserir.\n");
+        return;
+    }
+    f->inicio = (f->inicio - 1 + MAX_TAMANHO) % MAX_TAMANHO;
+    f->itens[f->inicio] = p;
+    f->total++;
+}
+
 /// @brief Remove as peças da Fila (Dequeue)
 /// @param f ponteiro para a fila
 /// @param p ponteiro para a struct que receberá a peça removida
@@ -248,9 +324,11 @@ void MostrarFila(Fila *f){
 /// @brief Menu com as opcoes 
 void Menu(){
     printf("\n=========TETRIS STACK=======\n");
-    printf("1 - Jogar peca\n"); // remove uma peca da frente da fila
-    printf("2 - Reservar Peca\n"); // move a peca da frete da fila para o topo da pilha, se houver espaco
-    printf("3 - Usar peca reservada\n"); // remove a pe;a do topo da pilha e simula seu uso
+    printf("1 - Jogar peca da frente da FILA\n"); // remove uma peca da frente da fila
+    printf("2 - Reservar Peca da FILA para PILHA\n"); // move a peca da frete da fila para o topo da pilha, se houver espaco
+    printf("3 - Usar peca reservada da PILHA\n"); // remove a pe;a do topo da pilha e simula seu uso
+    printf("4 - Trocar uma peca da FILA com a PILHA\n");//substitui a peça da frente da fila com o topo da pilha.
+    printf("5 - Trocar tres pecas da FILA com a PILHA\n"); //alterna as três primeiras peças da fila com as três peças da pilha (caso ambas tenham, pelo menos, 3 peças).
     printf("0 - Sair\n");
     printf("Escolha uma opcao: ");
 }
